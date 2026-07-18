@@ -24,18 +24,20 @@ pipeline {
         }
 
         stage('Push to Docker Hub') {
-            steps {
-                echo 'Pushing to Docker Hub...'
-                withCredentials([usernamePassword(
-                    credentialsId: 'Dockerhub-credential',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                    sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                }
-            }
+    steps {
+        echo 'Pushing to Docker Hub...'
+        withCredentials([usernamePassword(
+            credentialsId: 'Dockerhub-credential',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS'
+        )]) {
+            sh '''
+                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                docker push mallikarjun46/pipeline-app:latest
+            '''
         }
+    }
+}
 
         stage('Deploy to Kubernetes') {
             steps {
